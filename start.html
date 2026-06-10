@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kaffeekarte – Übersicht</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --espresso:  #1C1008;
+      --roast:     #3B1F0A;
+      --crema:     #C8862A;
+      --foam:      #F5ECD7;
+      --milk:      #FBF6EE;
+      --steam:     #E8D9BE;
+    }
+
+    body {
+      background: var(--milk);
+      color: var(--espresso);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Header ── */
+    header {
+      width: 100%;
+      background: var(--roast);
+      padding: 48px 24px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 120%, rgba(200,134,42,.35) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .steam-row {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .steam {
+      width: 3px;
+      height: 32px;
+      background: linear-gradient(to top, transparent, rgba(245,236,215,.5));
+      border-radius: 2px;
+      animation: rise 2.4s ease-in-out infinite;
+    }
+    .steam:nth-child(2) { animation-delay: .6s; height: 24px; }
+    .steam:nth-child(3) { animation-delay: 1.2s; height: 28px; }
+
+    @keyframes rise {
+      0%   { transform: translateY(0)   scaleX(1);   opacity: .6; }
+      50%  { transform: translateY(-12px) scaleX(1.4); opacity: .3; }
+      100% { transform: translateY(-24px) scaleX(.8); opacity: 0;  }
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      color: var(--foam);
+      letter-spacing: .02em;
+      line-height: 1.1;
+    }
+
+    header p {
+      margin-top: 10px;
+      color: var(--steam);
+      font-size: .95rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    /* ── Cards ── */
+    main {
+      width: 100%;
+      max-width: 860px;
+      padding: 52px 24px 64px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--steam);
+      border-radius: 14px;
+      padding: 32px 28px 28px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--crema);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .22s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(28,16,8,.10);
+      border-color: var(--crema);
+    }
+
+    .card:hover::after { transform: scaleX(1); }
+
+    .icon {
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--roast);
+    }
+
+    .card p {
+      font-size: .9rem;
+      color: #6B5744;
+      line-height: 1.55;
+      flex: 1;
+    }
+
+    .card-link {
+      font-size: .82rem;
+      font-weight: 500;
+      color: var(--crema);
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: auto;
+      padding: 24px;
+      font-size: .8rem;
+      color: #9C8472;
+      text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="steam-row">
+      <div class="steam"></div>
+      <div class="steam"></div>
+      <div class="steam"></div>
+    </div>
+    <h1>Kaffeekarte</h1>
+    <p>Bestellsystem · Empfang · QR-Generator</p>
+  </header>
+
+  <main>
+    <div class="grid">
+
+      <a class="card" href="bestellsystem.html">
+        <div class="icon">☕</div>
+        <h2>Bestellsystem</h2>
+        <p>Kaffee und Getränke bestellen – einfach, schnell und direkt am Tisch.</p>
+        <span class="card-link">Zur Bestellung →</span>
+      </a>
+
+      <a class="card" href="empfangssystem.html">
+        <div class="icon">📋</div>
+        <h2>Empfangssystem</h2>
+        <p>Eingehende Bestellungen in Echtzeit sehen und abhaken.</p>
+        <span class="card-link">Zum Empfang →</span>
+      </a>
+
+      <a class="card" href="qr-generator.html">
+        <div class="icon">⬛</div>
+        <h2>QR-Generator</h2>
+        <p>QR-Codes für einzelne Tische erstellen, drucken und verteilen.</p>
+        <span class="card-link">Codes erstellen →</span>
+      </a>
+
+    </div>
+  </main>
+
+  <footer>Kaffeekarte – läuft auf GitHub Pages</footer>
+
+</body>
+</html>
