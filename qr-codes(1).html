@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR-Code Generator – Tischkarten</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f7f4ef; --surface: #ffffff; --surface2: #f0ece4;
+      --border: rgba(90,75,65,0.15); --border2: rgba(90,75,65,0.3);
+      --text: #2c2420; --text2: #7a6e60;
+      --accent: #534AB7; --accent-bg: #EEEDFE; --accent-border: #AFA9EC; --accent-text: #3C3489;
+      --radius: 10px; --radius-sm: 6px;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 32px 16px 64px; }
+    .container { max-width: 860px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 36px; }
+    header h1 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 400; }
+    header p { font-size: 13px; color: var(--text2); margin-top: 6px; }
+
+    .config-box { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 32px; }
+    .config-box h2 { font-size: 14px; font-weight: 500; margin-bottom: 16px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.07em; }
+    .form-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group label { font-size: 11px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; }
+    .form-group input { font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 8px 12px; border-radius: var(--radius-sm); border: 0.5px solid var(--border); background: var(--bg); color: var(--text); outline: none; width: 120px; transition: border-color 0.15s; }
+    .form-group input:focus { border-color: var(--accent-border); }
+    .btn-gen { background: var(--accent); border: none; border-radius: var(--radius-sm); padding: 9px 20px; font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; color: #fff; cursor: pointer; transition: background 0.15s; }
+    .btn-gen:hover { background: #3C3489; }
+    .hint { font-size: 12px; color: var(--text2); margin-top: 10px; line-height: 1.6; background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; border: 0.5px solid var(--border); }
+    .hint code { font-family: monospace; font-size: 11px; background: rgba(83,74,183,0.08); padding: 1px 5px; border-radius: 3px; color: var(--accent-text); }
+
+    .print-bar { margin-bottom: 20px; }
+    .btn-print-all { background: var(--surface); border: 0.5px solid var(--border2); border-radius: var(--radius-sm); padding: 9px 18px; font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; color: var(--text2); cursor: pointer; transition: background 0.15s; }
+    .btn-print-all:hover { background: var(--surface2); color: var(--text); }
+
+    /* Screen: 2 pro Zeile */
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+
+    .table-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      transition: box-shadow 0.15s, border-color 0.15s;
+    }
+    .table-card:hover { border-color: var(--border2); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+    .table-card .tc-title { font-family: 'Playfair Display', serif; font-size: 0.85rem; color: var(--text2); letter-spacing: 0.06em; text-transform: uppercase; }
+    .table-card .tc-num { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 400; color: var(--text); line-height: 1; }
+    .table-card .qr-wrap { width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; }
+    .table-card .qr-wrap canvas, .table-card .qr-wrap img { width: 200px !important; height: 200px !important; }
+    .table-card .tc-hint { font-size: 11px; color: var(--text2); line-height: 1.6; }
+    .table-card .btn-print { font-size: 11px; color: var(--accent-text); background: var(--accent-bg); border: 0.5px solid var(--accent-border); border-radius: 20px; padding: 3px 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s; }
+    .table-card .btn-print:hover { background: #CECBF6; }
+
+    /* Druck: 2x2 pro A4-Seite */
+    @media print {
+      @page { size: A4 portrait; margin: 12mm; }
+      body { background: white; padding: 0; }
+      .config-box, header, .print-bar { display: none !important; }
+      .container { max-width: 100%; }
+      .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10mm;
+      }
+      .table-card {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        break-inside: avoid;
+        page-break-inside: avoid;
+        padding: 16px;
+        gap: 10px;
+      }
+      .table-card .tc-title { font-size: 0.8rem; }
+      .table-card .tc-num { font-size: 2.8rem; }
+      .table-card .qr-wrap { width: 180px; height: 180px; }
+      .table-card .qr-wrap canvas, .table-card .qr-wrap img { width: 180px !important; height: 180px !important; }
+      .table-card .tc-hint { font-size: 10px; }
+      .table-card .btn-print { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Tischkarten & QR-Codes</h1>
+    <p>Generiere QR-Codes für jeden Tisch – Kunden scannen und bestellen direkt.</p>
+  </header>
+
+  <div class="config-box">
+    <h2>Einstellungen</h2>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Anzahl Tische</label>
+        <input type="number" id="cfg-count" value="10" min="1" max="50">
+      </div>
+      <div class="form-group" style="flex:1;min-width:260px;">
+        <label>URL des Bestellsystems</label>
+        <input type="text" id="cfg-url" value="https://at-home-services.github.io/coffee/bestellsystem.html" style="width:100%;">
+      </div>
+      <button class="btn-gen" onclick="generate()">Generieren</button>
+    </div>
+    <div class="hint">
+      Die QR-Codes enthalten die vollständige URL inkl. Tischnummer, z.B. <code>…bestellsystem.html?tisch=1</code><br>
+      Beim Scannen öffnet sich das Bestellsystem direkt am richtigen Tisch – kein manuelles Scannen nötig.
+    </div>
+  </div>
+
+  <div class="print-bar">
+    <button class="btn-print-all" onclick="window.print()">🖨 Alle drucken (A4 · 4 pro Seite)</button>
+  </div>
+
+  <div class="cards-grid" id="cards-grid"></div>
+</div>
+
+<script>
+function generate() {
+  const count = Math.max(1, Math.min(50, parseInt(document.getElementById("cfg-count").value) || 10));
+  const grid = document.getElementById("cards-grid");
+  grid.innerHTML = "";
+
+  for (let i = 1; i <= count; i++) {
+    const baseUrl = (document.getElementById("cfg-url").value || "bestellsystem.html").trim().replace(/\?.*$/, "");
+    const qrText = baseUrl + "?tisch=" + i;
+    const card = document.createElement("div");
+    card.className = "table-card";
+    card.innerHTML = `
+      <div class="tc-title">Kaffeekarte</div>
+      <div class="tc-num">${i}</div>
+      <div class="qr-wrap" id="qr-${i}"></div>
+      <div class="tc-hint">QR-Code scannen<br>und bestellen</div>
+      <button class="btn-print" onclick="printCard(${i})">Einzeln drucken</button>
+    `;
+    grid.appendChild(card);
+
+    new QRCode(document.getElementById("qr-" + i), {
+      text: qrText,
+      width: 200,
+      height: 200,
+      colorDark: "#2c2420",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  }
+}
+
+function printCard(num) {
+  const card = document.querySelectorAll(".table-card")[num - 1];
+  const canvas = card.querySelector(".qr-wrap canvas");
+  const imgSrc = canvas ? canvas.toDataURL("image/png") : "";
+  const w = window.open("", "_blank", "width=400,height=500");
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+      body{font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f7f4ef;}
+      .card{background:#fff;border:1px solid #ccc;border-radius:10px;padding:28px 24px;text-align:center;width:260px;}
+      .tc-title{font-family:'Playfair Display',serif;font-size:12px;color:#7a6e60;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;}
+      .tc-num{font-family:'Playfair Display',serif;font-size:52px;font-weight:400;color:#2c2420;line-height:1;margin-bottom:12px;}
+      .qr-img{display:block;margin:0 auto;width:200px;height:200px;}
+      .tc-hint{font-size:10px;color:#7a6e60;margin-top:10px;line-height:1.6;}
+    </style></head><body>
+    <div class="card">
+      <div class="tc-title">Kaffeekarte</div>
+      <div class="tc-num">${num}</div>
+      <img class="qr-img" src="${imgSrc}" alt="QR-Code Tisch ${num}">
+      <div class="tc-hint">QR-Code scannen<br>und bestellen</div>
+    </div>
+    <script>window.onload=()=>window.print()<\/script>
+  </body></html>`);
+  w.document.close();
+}
+
+generate();
+</script>
+</body>
+</html>
