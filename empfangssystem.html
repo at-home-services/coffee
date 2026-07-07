@@ -7,26 +7,27 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #eef2f3;
-            color: #333;
+            background-color: #f4f4f9;
             margin: 0;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         h1 {
-            text-align: center;
             color: #333;
         }
-        .bestell-container {
-            max-width: 600px;
-            margin: 0 auto;
+        .container {
             background: #fff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
         }
         .bestellung {
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -34,19 +35,12 @@
         .bestellung:last-child {
             border-bottom: none;
         }
-        .bestell-details {
-            flex-grow: 1;
-        }
-        .tisch-nummer {
-            font-weight: bold;
-            color: #4CAF50;
-        }
         .btn-loeschen {
             background-color: #f44336;
             color: white;
             border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
+            padding: 5px 10px;
+            border-radius: 3px;
             cursor: pointer;
         }
         .btn-loeschen:hover {
@@ -56,15 +50,15 @@
 </head>
 <body>
 
-    <h1>Eingegangene Bestellungen</h1>
+    <h1>Empfangssystem</h1>
 
-    <div class="bestell-container" id="bestell-liste">
+    <div class="container" id="bestell-liste">
         <!-- Bestellungen werden hier dynamisch eingefügt -->
     </div>
 
     <script>
         const bc = new BroadcastChannel('cafe_bestellungen');
-        // Daten persistent aus dem LocalStorage laden
+        // Persistente Daten direkt aus dem LocalStorage laden
         let bestellungen = JSON.parse(localStorage.getItem('cafeBestellungen')) || [];
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -77,7 +71,7 @@
 
         function neueBestellungEintragen(daten) {
             const neueBestellung = {
-                id: Date.now() + Math.random().toString(36).substr(2, 9), // Sichere, einzigartige ID
+                id: Date.now() + Math.random().toString(36).substr(2, 9), // Generiert eine eindeutige ID zum fehlerfreien Löschen
                 tisch: daten.tisch,
                 artikel: daten.artikel
             };
@@ -93,7 +87,7 @@
             liste.innerHTML = '';
 
             if (bestellungen.length === 0) {
-                liste.innerHTML = '<p style="text-align:center; color:#777;">Keine offenen Bestellungen.</p>';
+                liste.innerHTML = '<p style="text-align:center; color:#777;">Keine Bestellungen vorhanden.</p>';
                 return;
             }
 
@@ -101,8 +95,8 @@
                 const eintrag = document.createElement('div');
                 eintrag.className = 'bestellung';
                 eintrag.innerHTML = `
-                    <div class="bestell-details">
-                        <span class="tisch-nummer">Tisch ${b.tisch}</span>
+                    <div>
+                        <strong>Tisch ${b.tisch}:</strong>
                         <p style="margin: 5px 0 0 0; white-space: pre-line;">${b.artikel}</p>
                     </div>
                     <button class="btn-loeschen" onclick="loescheBestellung('${b.id}')">Gelöscht</button>
@@ -111,10 +105,11 @@
             });
         }
 
-        // Reparierte Löschfunktion über eindeutige ID
+        // Reparierte Löschfunktion
         function loescheBestellung(id) {
+            // Filtere das Element anhand der ID sauber heraus
             bestellungen = bestellungen.filter(b => b.id !== id);
-            speichereDaten(); // Änderungen sofort im Browser fixieren
+            speichereDaten(); // Aktualisierung direkt im Browser-Speicher absichern
             renderBestellungen();
         }
 
