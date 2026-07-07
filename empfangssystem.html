@@ -3,49 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Empfangssystem (Theke)</title>
+    <title>Empfangssystem</title>
     <style>
-        body { font-family: sans-serif; background: #e9ecef; padding: 20px; }
-        .bestell-liste { display: flex; flex-direction: column; gap: 15px; max-width: 800px; margin: 0 auto; }
-        .bestell-karte { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .bestell-inhalt h3 { margin: 0 0 10px 0; color: #333; }
-        .bestell-inhalt p { margin: 0; font-size: 1.1em; color: #555; white-space: pre-line; }
-        .btn-loeschen { background: #dc3545; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-loeschen:hover { background: #bd2130; }
-        .keine-bestellungen { text-align: center; color: #777; font-style: italic; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eef2f3;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .bestell-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .bestellung {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .bestellung:last-child {
+            border-bottom: none;
+        }
+        .bestell-details {
+            flex-grow: 1;
+        }
+        .tisch-nummer {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        .btn-loeschen {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-loeschen:hover {
+            background-color: #d32f2f;
+        }
     </style>
 </head>
 <body>
 
-    <h2 style="text-align: center;">Eingegangene Bestellungen (Tresen)</h2>
-    
-    <div class="bestell-liste" id="bestell-liste">
-        <!-- Hier landen die Bestellungen dynamisch -->
+    <h1>Eingegangene Bestellungen</h1>
+
+    <div class="bestell-container" id="bestell-liste">
+        <!-- Bestellungen werden hier dynamisch eingefügt -->
     </div>
 
     <script>
         const bc = new BroadcastChannel('cafe_bestellungen');
-        
-        // 1. Aus dem LocalStorage laden (Dauerhaftigkeit auch nach Schließen/Aktualisieren!)
+        // Daten persistent aus dem LocalStorage laden
         let bestellungen = JSON.parse(localStorage.getItem('cafeBestellungen')) || [];
 
-        // Direkt beim Start rendern
         document.addEventListener("DOMContentLoaded", () => {
             renderBestellungen();
         });
 
-        // Auf neue Bestellungen über den Kanal hören
         bc.onmessage = function(event) {
             neueBestellungEintragen(event.data);
         };
 
         function neueBestellungEintragen(daten) {
             const neueBestellung = {
-                // Eindeutige ID generieren (Kombination aus Zeitstempel und Zufall) zum sicheren Löschen
-                id: Date.now() + Math.random().toString(36).substr(2, 9),
+                id: Date.now() + Math.random().toString(36).substr(2, 9), // Sichere, einzigartige ID
                 tisch: daten.tisch,
-                artikel: daten.artikel,
-                zeit: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+                artikel: daten.artikel
             };
 
             bestellungen.push(neueBestellung);
@@ -55,37 +89,32 @@
 
         function renderBestellungen() {
             const liste = document.getElementById('bestell-liste');
+            if (!liste) return;
             liste.innerHTML = '';
 
             if (bestellungen.length === 0) {
-                liste.innerHTML = '<p class="keine-bestellungen">Aktuell keine offenen Bestellungen.</p>';
+                liste.innerHTML = '<p style="text-align:center; color:#777;">Keine offenen Bestellungen.</p>';
                 return;
             }
 
             bestellungen.forEach(b => {
-                const karte = document.createElement('div');
-                karte.className = 'bestell-karte';
-                karte.innerHTML = `
-                    <div class="bestell-inhalt">
-                        <h3>Tisch ${b.tisch} <span style="font-size: 0.8em; font-weight: normal; color:#888;"> um ${b.zeit} Uhr</span></h3>
-                        <p>${b.artikel}</p>
+                const eintrag = document.createElement('div');
+                eintrag.className = 'bestellung';
+                eintrag.innerHTML = `
+                    <div class="bestell-details">
+                        <span class="tisch-nummer">Tisch ${b.tisch}</span>
+                        <p style="margin: 5px 0 0 0; white-space: pre-line;">${b.artikel}</p>
                     </div>
-                    <!-- REPARIERTER BUTTON: Löscht exakt über die ID -->
-                    <button class="btn-loeschen" onclick="loescheBestellung('${b.id}')">Gelöscht / Erledigt</button>
+                    <button class="btn-loeschen" onclick="loescheBestellung('${b.id}')">Gelöscht</button>
                 `;
-                liste.appendChild(karte);
+                liste.appendChild(eintrag);
             });
         }
 
-        // REPARIERTE LÖSCHFUNKTION
+        // Reparierte Löschfunktion über eindeutige ID
         function loescheBestellung(id) {
-            // Filtere die Liste, sodass das Element mit der ID verschwindet
             bestellungen = bestellungen.filter(b => b.id !== id);
-            
-            // WICHTIG: Die gefilterte Liste sofort wieder sichern!
-            speichereDaten();
-            
-            // Anzeige neu aufbauen
+            speichereDaten(); // Änderungen sofort im Browser fixieren
             renderBestellungen();
         }
 
