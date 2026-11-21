@@ -3,140 +3,165 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
   <title>Kaffeekarte – Bestellung</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.29.0/dist/tabler-icons.min.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --espresso: #1C1008; --roast: #3B1F0A; --crema: #C8862A; --foam: #F5ECD7; --milk: #FBF6EE; --steam: #E8D9BE;
-      --bg: var(--milk); --surface: #ffffff; --surface2: var(--foam);
-      --border: rgba(90,75,65,0.15); --border2: rgba(90,75,65,0.3);
-      --text: var(--espresso); --text2: #7a6e60;
-      --accent: var(--crema); --accent-bg: #fdf4e7; --accent-border: #e6b96a; --accent-text: var(--roast);
-      --green-bg: #EAF3DE; --green-text: #27500A; --green-border: #97C459;
-      --amber: #C8862A; --amber-bg: rgba(200,134,42,0.1); --amber-text: #5a3800; --amber-border: rgba(200,134,42,0.4);
-      --red-bg: #FDEAEA; --red-text: #8B1A1A; --red-border: rgba(200,50,50,0.35);
-      --radius: 14px; --radius-sm: 8px;
+      /* Brauntöne (bleiben erhalten) */
+      --espresso: #1C1008; --roast: #3B1F0A; --roast-light: #6B3E16; --roast-hover: #7E4C1E;
+      --crema: #C8862A; --foam: #F5ECD7; --steam: #E8D9BE;
+      /* Darkmode wie Empfangssystem */
+      --bg: #17120e; --bg2: #211812;
+      --surface: rgba(255,248,238,0.07); --surface2: rgba(255,248,238,0.12); --surface-solid: #251b14;
+      --border: rgba(245,220,178,0.16); --border2: rgba(245,220,178,0.28);
+      --text: #F7EFE2; --text2: #B8A68E;
+      --accent: var(--crema); --accent-bg: rgba(200,134,42,0.15); --accent-border: rgba(200,134,42,0.45); --accent-text: #F0C36A;
+      --green: #97C459; --green-bg: rgba(151,196,89,0.13); --green-text: #CBE7A2; --green-border: rgba(151,196,89,0.32);
+      --amber: #EFA027; --amber-bg: rgba(239,159,39,0.14); --amber-text: #FAC775; --amber-border: rgba(239,159,39,0.34);
+      --red-bg: rgba(226,75,74,0.13); --red-text: #F09595; --red-border: rgba(226,75,74,0.35);
+      --radius: 18px; --radius-sm: 12px;
     }
-    body { font-family: 'Inter', sans-serif; background: var(--milk); color: var(--espresso); min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(200,134,42,0.20), transparent 34rem),
+        radial-gradient(circle at bottom right, rgba(107,62,22,0.25), transparent 32rem),
+        linear-gradient(145deg, var(--bg), var(--bg2));
+      background-attachment: fixed;
+      color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    }
     .page-wrap { width: 100%; display: flex; flex-direction: column; align-items: center; }
-    .page-header { width: 100%; background: var(--roast); padding: 40px 24px 36px; text-align: center; position: relative; overflow: hidden; margin-bottom: 0; }
+    .page-header { width: 100%; background: linear-gradient(160deg, var(--roast), var(--espresso)); border-bottom: 1px solid var(--border); padding: 40px 24px 36px; text-align: center; position: relative; overflow: hidden; box-shadow: 0 18px 50px rgba(0,0,0,.35); }
     .page-header::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 120%, rgba(200,134,42,.35) 0%, transparent 70%); pointer-events: none; }
     .steam-row { display: flex; justify-content: center; gap: 18px; margin-bottom: 16px; }
     .steam { width: 3px; height: 28px; background: linear-gradient(to top, transparent, rgba(245,236,215,.5)); border-radius: 2px; animation: rise 2.4s ease-in-out infinite; }
     .steam:nth-child(2) { animation-delay: .6s; height: 20px; }
     .steam:nth-child(3) { animation-delay: 1.2s; height: 24px; }
     @keyframes rise { 0% { transform: translateY(0) scaleX(1); opacity: .6; } 50% { transform: translateY(-10px) scaleX(1.4); opacity: .3; } 100% { transform: translateY(-20px) scaleX(.8); opacity: 0; } }
-    .page-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 5vw, 2.6rem); color: var(--foam); letter-spacing: .02em; line-height: 1.1; font-weight: 700; }
-    .page-header p { margin-top: 8px; color: var(--steam); font-size: .85rem; letter-spacing: .06em; text-transform: uppercase; font-family: 'Inter', sans-serif; }
-    .page-header a.back-link { position: absolute; top: 16px; left: 18px; font-size: 12px; color: rgba(245,236,215,0.6); text-decoration: none; letter-spacing: .04em; text-transform: uppercase; display: flex; align-items: center; gap: 5px; transition: color .15s; }
-    .page-header a.back-link:hover { color: var(--foam); }
+    .page-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 5vw, 2.6rem); color: var(--foam); letter-spacing: .02em; line-height: 1.1; font-weight: 700; position: relative; }
+    .page-header p { margin-top: 8px; color: var(--steam); font-size: .85rem; letter-spacing: .06em; text-transform: uppercase; position: relative; }
     .container { width: 100%; max-width: 600px; padding: 32px 16px 48px; }
-    .conn-bar { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; color: var(--text2); margin-bottom: 20px; }
-    .dot { width: 7px; height: 7px; border-radius: 50%; background: #888; }
-    .dot.on { background: #639922; } .dot.err { background: #E24B4A; }
+    .conn-bar { display: flex; align-items: center; justify-content: center; gap: 7px; font-size: 12px; color: var(--text2); margin: 0 auto 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px; width: fit-content; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text2); }
+    .dot.on { background: var(--green); } .dot.err { background: #E24B4A; }
+
+    .card-glass { background: linear-gradient(145deg, rgba(255,255,255,.09), rgba(255,255,255,.04)); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 16px 44px rgba(0,0,0,.2); }
 
     /* ── SCAN-SCREEN ── */
-    #scan-screen { display: block; }
-    .scan-card { background: var(--surface); border: 1px solid var(--steam); border-radius: var(--radius); padding: 28px 24px; text-align: center; }
-    .scan-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--accent-bg); border: 1px solid var(--accent-border); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 26px; color: var(--crema); }
-    .scan-card h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; color: var(--roast); }
+    .scan-card { padding: 28px 24px; text-align: center; }
+    .scan-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--accent-bg); border: 1px solid var(--accent-border); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px; color: var(--accent-text); }
+    .scan-card h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; color: var(--foam); }
     .scan-card p { font-size: 13px; color: var(--text2); margin-bottom: 20px; line-height: 1.6; }
-    .btn-scan-start { background: var(--roast); border: none; border-radius: var(--radius-sm); padding: 11px 24px; font-size: 14px; font-weight: 500; font-family: 'Inter', sans-serif; color: var(--foam); cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background 0.15s; }
-    .btn-scan-start:hover { background: var(--espresso); }
+    .btn-primary { background: var(--roast-light); border: 1px solid var(--accent-border); border-radius: var(--radius-sm); padding: 11px 24px; font-size: 14px; font-weight: 500; font-family: inherit; color: var(--foam); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: background .15s, transform .15s; }
+    .btn-primary:hover { background: var(--roast-hover); transform: translateY(-1px); }
+    .btn-primary:disabled { background: var(--surface); border-color: var(--border); color: var(--text2); cursor: default; transform: none; }
+    .btn-ghost { background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 14px; font-size: 13px; font-family: inherit; color: var(--text2); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background .15s, color .15s, border-color .15s; }
+    .btn-ghost:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
 
-    /* Kamera-Bereich */
-    .scanner-wrap { display: none; margin-top: 20px; border-radius: var(--radius-sm); overflow: hidden; position: relative; background: #000; }
+    .scanner-wrap { display: none; margin-top: 20px; border-radius: var(--radius-sm); overflow: hidden; position: relative; background: #000; border: 1px solid var(--border); }
     .scanner-wrap.active { display: block; }
-    .scanner-wrap video { width: 100%; display: block; max-height: 280px; object-fit: cover; }
+    .scanner-wrap video { width: 100%; display: block; max-height: 320px; object-fit: cover; }
     .scan-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
-    .scan-frame { width: 180px; height: 180px; border: 2px solid rgba(255,255,255,0.7); border-radius: 12px; box-shadow: 0 0 0 2000px rgba(0,0,0,0.35); }
-    @keyframes scanLine { 0%,100% { transform: translateY(0); } 50% { transform: translateY(140px); } }
-    .scan-line { position: absolute; left: 50%; transform: translateX(-50%); top: calc(50% - 88px); width: 160px; height: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent); animation: scanLine 2s ease-in-out infinite; }
+    .scan-frame { width: 200px; height: 200px; border: 2px solid rgba(240,195,106,0.85); border-radius: 14px; box-shadow: 0 0 0 2000px rgba(0,0,0,0.4); }
+    @keyframes scanLine { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 180px); } }
+    .scan-line { position: absolute; left: 50%; top: calc(50% - 92px); width: 180px; height: 2px; background: linear-gradient(90deg, transparent, var(--accent-text), transparent); animation: scanLine 2s ease-in-out infinite; }
     .scan-hint { font-size: 12px; color: var(--text2); margin-top: 10px; }
-    .btn-scan-cancel { margin-top: 12px; background: none; border: 1px solid var(--border2); border-radius: var(--radius-sm); padding: 7px 16px; font-size: 12px; font-family: 'Inter', sans-serif; color: var(--text2); cursor: pointer; }
-    .btn-scan-cancel:hover { background: var(--surface2); }
+    .scan-actions { display: none; gap: 8px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+    .scan-actions.active { display: flex; }
 
-    /* Erfolg / Fehler beim Scan */
-    .scan-result { display: none; margin-top: 16px; border-radius: var(--radius-sm); padding: 12px 14px; font-size: 13px; align-items: center; gap: 10px; }
-    .scan-result.ok  { display: flex; background: var(--green-bg); border: 0.5px solid var(--green-border); color: var(--green-text); }
-    .scan-result.err { display: flex; background: var(--red-bg);   border: 0.5px solid var(--red-border);   color: var(--red-text); }
+    .scan-result { display: none; margin-top: 16px; border-radius: var(--radius-sm); padding: 12px 14px; font-size: 13px; align-items: center; gap: 10px; text-align: left; }
+    .scan-result.ok  { display: flex; background: var(--green-bg); border: 1px solid var(--green-border); color: var(--green-text); }
+    .scan-result.err { display: flex; background: var(--red-bg);   border: 1px solid var(--red-border);   color: var(--red-text); }
 
-    /* Tisch-Badge oben im Bestellmenü */
-    .table-badge { display: none; align-items: center; gap: 8px; background: var(--amber-bg); border: 0.5px solid var(--amber-border); border-radius: var(--radius-sm); padding: 9px 14px; margin-bottom: 18px; font-size: 13px; color: var(--amber-text); }
+    .manual { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; }
+    .manual label { font-size: 12px; color: var(--text2); }
+    .manual input { width: 80px; font-family: inherit; font-size: 14px; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: rgba(0,0,0,.2); color: var(--text); outline: none; text-align: center; }
+    .manual input:focus { border-color: var(--accent-border); }
+
+    /* Tisch-Badge */
+    .table-badge { display: none; align-items: center; gap: 8px; background: var(--amber-bg); border: 1px solid var(--amber-border); border-radius: var(--radius-sm); padding: 9px 14px; margin-bottom: 18px; font-size: 13px; color: var(--amber-text); }
     .table-badge.visible { display: flex; }
     .table-badge i { font-size: 16px; color: var(--amber); flex-shrink: 0; }
     .table-badge strong { font-weight: 600; }
-    .table-badge .btn-rescan { margin-left: auto; font-size: 11px; background: none; border: 0.5px solid var(--amber-border); border-radius: 20px; padding: 3px 10px; color: var(--amber-text); cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
-    .table-badge .btn-rescan:hover { background: rgba(239,159,39,0.15); }
+    .table-badge .btn-rescan { margin-left: auto; font-size: 11px; background: none; border: 1px solid var(--amber-border); border-radius: 999px; padding: 4px 10px; color: var(--amber-text); cursor: pointer; font-family: inherit; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+    .table-badge .btn-rescan:hover { background: rgba(239,159,39,0.18); }
 
     /* ── MENU-SCREEN ── */
     #menu-screen { display: none; }
-    .section-label { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text2); margin: 24px 0 10px; display: flex; align-items: center; gap: 8px; font-family: 'Inter', sans-serif; }
-    .section-label::after { content: ''; flex: 1; height: 0.5px; background: var(--steam); }
+    .section-label { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text2); margin: 24px 0 10px; display: flex; align-items: center; gap: 8px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
-    .item { background: var(--surface); border: 1px solid var(--steam); border-radius: var(--radius-sm); padding: 10px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: border-color 0.15s, background 0.15s, transform 0.15s, box-shadow 0.15s; user-select: none; -webkit-tap-highlight-color: transparent; }
-    .item:hover { border-color: var(--crema); background: var(--surface2); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(28,16,8,.07); }
+    .item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: border-color .15s, background .15s, transform .15s, box-shadow .15s; user-select: none; -webkit-tap-highlight-color: transparent; }
+    .item:hover { border-color: var(--accent-border); background: var(--surface2); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.25); }
     .item.active { border-color: var(--crema); background: var(--accent-bg); }
     .item .ico { font-size: 15px; color: var(--text2); flex-shrink: 0; }
-    .item.active .ico { color: var(--crema); }
+    .item.active .ico { color: var(--accent-text); }
     .item .lbl { font-size: 13px; color: var(--text); line-height: 1.3; flex: 1; }
-    .item.active .lbl { color: var(--roast); font-weight: 500; }
+    .item.active .lbl { color: var(--accent-text); font-weight: 500; }
     .item .qty { display: none; align-items: center; gap: 4px; flex-shrink: 0; }
     .item.active .qty { display: flex; }
-    .qty-btn { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--accent-border); background: var(--accent-bg); color: var(--roast); font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 500; }
-    .qty-btn:hover { background: var(--steam); }
-    .qty-num { font-size: 12px; font-weight: 500; color: var(--roast); min-width: 14px; text-align: center; }
-    .cart-box { background: var(--surface); border: 1px solid var(--steam); border-radius: var(--radius); padding: 20px; margin-top: 28px; }
-    .cart-box h3 { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-family: 'Inter', sans-serif; }
-    .cart-badge { font-size: 10px; background: var(--crema); color: #fff; border-radius: 10px; padding: 1px 7px; font-weight: 500; display: none; }
+    .qty-btn { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--accent-border); background: var(--accent-bg); color: var(--accent-text); font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 500; }
+    .qty-btn:hover { background: rgba(200,134,42,0.3); }
+    .qty-num { font-size: 12px; font-weight: 600; color: var(--accent-text); min-width: 14px; text-align: center; }
+    .cart-box { padding: 20px; margin-top: 28px; }
+    .cart-box h3 { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .cart-badge { font-size: 10px; background: var(--crema); color: var(--espresso); border-radius: 10px; padding: 1px 7px; font-weight: 600; display: none; }
     .cart-empty { font-size: 13px; color: var(--text2); text-align: center; padding: 12px 0; }
-    .cart-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--steam); font-size: 13px; }
+    .cart-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
     .cart-row:last-child { border-bottom: none; }
-    .cart-row .cn { color: var(--text); } .cart-row .cq { color: var(--text2); font-size: 12px; }
+    .cart-row .cn { color: var(--text); flex: 1; } .cart-row .cq { color: var(--text2); font-size: 12px; }
+    .cart-row .cx { font-size: 11px; color: var(--amber-text); margin-left: 4px; }
     .cart-row .cr { background: none; border: none; color: var(--text2); cursor: pointer; padding: 2px 4px; border-radius: 4px; font-size: 13px; }
-    .cart-row .cr:hover { color: #A32D2D; background: #FCEBEB; }
+    .cart-row .cr:hover { color: var(--red-text); background: var(--red-bg); }
     .note-area { margin-top: 12px; }
-    .note-area textarea { width: 100%; font-family: 'Inter', sans-serif; font-size: 13px; padding: 9px 11px; border-radius: var(--radius-sm); border: 1px solid var(--steam); background: var(--milk); color: var(--text); resize: none; outline: none; transition: border-color 0.15s; }
-    .note-area textarea:focus { border-color: var(--crema); }
-    .note-area textarea::placeholder { color: var(--text2); }
+    .note-area textarea { width: 100%; font-family: inherit; font-size: 13px; padding: 9px 11px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: rgba(0,0,0,.2); color: var(--text); resize: none; outline: none; transition: border-color .15s; }
+    .note-area textarea:focus { border-color: var(--accent-border); }
+    .note-area textarea::placeholder { color: var(--text2); opacity: .8; }
     .actions { display: flex; gap: 8px; margin-top: 14px; }
-    .btn-clear { flex-shrink: 0; background: none; border: 1px solid var(--border2); border-radius: var(--radius-sm); padding: 9px 14px; font-size: 13px; font-family: 'Inter', sans-serif; color: var(--text2); cursor: pointer; }
-    .btn-clear:hover { background: var(--surface2); }
-    .btn-order { flex: 1; background: var(--roast); border: none; border-radius: var(--radius-sm); padding: 9px 14px; font-size: 13px; font-weight: 500; font-family: 'Inter', sans-serif; color: var(--foam); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.15s; }
-    .btn-order:hover { background: var(--espresso); }
-    .btn-order:disabled { background: var(--surface2); color: var(--text2); cursor: default; }
+    .actions .btn-primary { flex: 1; padding: 9px 14px; font-size: 13px; }
 
     /* ── SUCCESS ── */
-    .success-screen { display: none; text-align: center; padding: 48px 24px; }
+    .success-screen { display: none; text-align: center; padding: 40px 24px; }
     .success-check { width: 56px; height: 56px; border-radius: 50%; background: var(--green-bg); border: 1px solid var(--green-border); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 24px; color: var(--green-text); }
-    .success-screen h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; color: var(--roast); }
-    .success-screen p { font-size: 13px; color: var(--text2); margin-bottom: 20px; line-height: 1.6; max-width: 340px; margin-left: auto; margin-right: auto; }
-    .btn-new { background: none; border: 1px solid var(--border2); border-radius: var(--radius-sm); padding: 9px 20px; font-size: 13px; font-family: 'Inter', sans-serif; cursor: pointer; color: var(--text); display: inline-flex; align-items: center; gap: 6px; }
-    .btn-new:hover { background: var(--surface2); }
-    footer { text-align: center; margin-top: 40px; font-size: 0.75rem; color: #9C8472; font-style: italic; }
+    .success-screen h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; color: var(--foam); }
+    .success-screen p { font-size: 13px; color: var(--text2); margin: 0 auto 20px; line-height: 1.6; max-width: 340px; }
+    footer { text-align: center; margin-top: 40px; font-size: 0.75rem; color: var(--text2); opacity: .7; font-style: italic; }
+
+    /* ── EXTRAS MODAL ── */
+    #extras-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(3px); z-index: 100; align-items: flex-end; justify-content: center; }
+    #extras-modal { background: var(--surface-solid); border: 1px solid var(--border); border-bottom: none; border-radius: var(--radius) var(--radius) 0 0; padding: 24px; width: 100%; max-width: 600px; box-shadow: 0 -12px 40px rgba(0,0,0,.5); }
+    .extras-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .extras-head span { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--foam); }
+    .extras-head button { background: none; border: none; font-size: 18px; color: var(--text2); cursor: pointer; padding: 4px; }
+    .extras-sub { font-size: 12px; color: var(--text2); margin-bottom: 18px; }
+    #extras-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .extra-opt { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 11px 14px; cursor: pointer; font-size: 14px; color: var(--text); }
+    .extra-opt:has(input:checked) { background: var(--accent-bg); border-color: var(--accent-border); }
+    .extra-opt input { width: 16px; height: 16px; accent-color: var(--crema); cursor: pointer; }
+    #extras-modal .btn-primary { width: 100%; }
   </style>
 </head>
 <body>
 <div class="page-wrap">
   <div class="page-header">
-    <a class="back-link" href="index.html">← Übersicht</a>
     <div class="steam-row"><div class="steam"></div><div class="steam"></div><div class="steam"></div></div>
     <h1>Kaffeekarte</h1>
     <p>Bestellsystem</p>
   </div>
 <div class="container">
-  <div class="conn-bar" style="margin-top:20px"><span class="dot" id="conn-dot"></span><span id="conn-label">Verbinde…</span></div>
+  <div class="conn-bar"><span class="dot" id="conn-dot"></span><span id="conn-label">Verbinde…</span></div>
 
   <!-- ── SCAN-SCREEN ── -->
   <div id="scan-screen">
-    <div class="scan-card">
+    <div class="scan-card card-glass">
       <div class="scan-icon"><i class="ti ti-qrcode" aria-hidden="true"></i></div>
       <h2>Tisch scannen</h2>
       <p>Halte die Kamera auf den QR-Code am Tisch,<br>um die Bestellung zu starten.</p>
-      <button class="btn-scan-start" onclick="startScanner()">
+      <button class="btn-primary" id="btn-start" onclick="startScanner()">
         <i class="ti ti-camera" aria-hidden="true"></i> Kamera öffnen
       </button>
 
@@ -148,37 +173,38 @@
         </div>
       </div>
       <p class="scan-hint" id="scan-hint" style="display:none">QR-Code in den Rahmen halten…</p>
-      <button class="btn-scan-cancel" id="btn-cancel" style="display:none" onclick="stopScanner()">Abbrechen</button>
+      <div class="scan-actions" id="scan-actions">
+        <button class="btn-ghost" id="btn-switch" onclick="switchCamera()" style="display:none"><i class="ti ti-camera-rotate" aria-hidden="true"></i> Kamera wechseln</button>
+        <button class="btn-ghost" onclick="stopScanner()"><i class="ti ti-x" aria-hidden="true"></i> Abbrechen</button>
+      </div>
 
       <div class="scan-result" id="scan-result"></div>
+
+      <form class="manual" onsubmit="manualTable(event)">
+        <label for="manual-num">oder Tischnummer eingeben:</label>
+        <input id="manual-num" type="number" min="1" max="999" inputmode="numeric" placeholder="Nr.">
+        <button class="btn-ghost" type="submit"><i class="ti ti-arrow-right" aria-hidden="true"></i> Weiter</button>
+      </form>
     </div>
   </div>
 
   <!-- ── MENU-SCREEN ── -->
   <div id="menu-screen">
-    <!-- Tisch-Badge -->
     <div class="table-badge" id="table-badge">
       <i class="ti ti-armchair" aria-hidden="true"></i>
       <span>Tisch <strong id="table-badge-num"></strong></span>
       <button class="btn-rescan" onclick="goBackToScan()"><i class="ti ti-qrcode" aria-hidden="true"></i> Anderen Tisch</button>
     </div>
 
-    <div class="section-label"><i class="ti ti-coffee" aria-hidden="true"></i> Klassiker</div>
-    <div class="grid" id="grid-klassiker"></div>
-    <div class="section-label"><i class="ti ti-droplet" aria-hidden="true"></i> Milchspezialitäten</div>
-    <div class="grid" id="grid-milch"></div>
-    <div class="section-label"><i class="ti ti-snowflake" aria-hidden="true"></i> Eiskaffee &amp; Cold Drinks</div>
-    <div class="grid" id="grid-kalt"></div>
-    <div class="section-label"><i class="ti ti-dots" aria-hidden="true"></i> Weiteres</div>
-    <div class="grid" id="grid-weiteres"></div>
+    <div id="menu-grids"></div>
 
-    <div class="cart-box">
+    <div class="cart-box card-glass">
       <h3><i class="ti ti-shopping-cart" aria-hidden="true"></i> Bestellung <span class="cart-badge" id="badge"></span></h3>
       <div id="cart-content"><p class="cart-empty">Noch nichts ausgewählt.</p></div>
       <div class="note-area"><textarea id="note" rows="2" placeholder="Allgemeine Anmerkungen…"></textarea></div>
       <div class="actions">
-        <button class="btn-clear" onclick="clearCart()">Leeren</button>
-        <button class="btn-order" id="btn-order" onclick="placeOrder()" disabled>
+        <button class="btn-ghost" onclick="clearCart()">Leeren</button>
+        <button class="btn-primary" id="btn-order" onclick="placeOrder()" disabled>
           <i class="ti ti-send" aria-hidden="true"></i> Jetzt bestellen
         </button>
       </div>
@@ -186,11 +212,11 @@
   </div>
 
   <!-- ── SUCCESS ── -->
-  <div class="success-screen" id="success-screen">
+  <div class="success-screen card-glass" id="success-screen">
     <div class="success-check"><i class="ti ti-check" aria-hidden="true"></i></div>
     <h2>Bestellung aufgegeben!</h2>
     <p id="success-text"></p>
-    <button class="btn-new" onclick="resetApp()"><i class="ti ti-refresh" aria-hidden="true"></i> Nächster Tisch</button>
+    <button class="btn-ghost" onclick="resetApp()"><i class="ti ti-refresh" aria-hidden="true"></i> Nächster Tisch</button>
   </div>
 
   <footer>Kaffeekarte – Kellnersystem</footer>
@@ -198,204 +224,300 @@
 </div>
 
 <!-- ── EXTRAS MODAL ── -->
-<div id="extras-overlay" style="display:none;position:fixed;inset:0;background:rgba(28,16,8,.55);z-index:100;align-items:flex-end;justify-content:center;" onclick="dismissExtrasModal(event)">
-  <div id="extras-modal" style="background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;padding:24px;width:100%;max-width:600px;box-shadow:0 -8px 32px rgba(28,16,8,.18);">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-      <span style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--roast)" id="extras-title">Extras wählen</span>
-      <button onclick="confirmExtras()" style="background:none;border:none;font-size:18px;color:var(--text2);cursor:pointer;padding:4px;"><i class="ti ti-x"></i></button>
+<div id="extras-overlay" onclick="dismissExtrasModal(event)">
+  <div id="extras-modal">
+    <div class="extras-head">
+      <span id="extras-title">Extras wählen</span>
+      <button onclick="confirmExtras()" aria-label="Schließen"><i class="ti ti-x"></i></button>
     </div>
-    <p style="font-size:12px;color:var(--text2);margin-bottom:18px;">Optional – einfach weitermachen wenn keine Extras gewünscht.</p>
-    <div id="extras-options" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;"></div>
-    <div style="display:flex;gap:8px;">
-      <button onclick="confirmExtras()" style="flex:1;background:var(--roast);border:none;border-radius:var(--radius-sm);padding:11px;font-size:13px;font-weight:500;font-family:'Inter',sans-serif;color:var(--foam);cursor:pointer;">
-        <i class="ti ti-check"></i> Hinzufügen
-      </button>
-    </div>
+    <p class="extras-sub">Optional – einfach weitermachen wenn keine Extras gewünscht.</p>
+    <div id="extras-options"></div>
+    <button class="btn-primary" onclick="confirmExtras()"><i class="ti ti-check"></i> Hinzufügen</button>
   </div>
 </div>
 
 <script>
 const ABLY_KEY = "IBM0rw.gGiVMw:X9LuWW5mM497fbE2SDIuLQrVE7DIj6HltJVriS48a1c";
-const catalog = {
-  klassiker: { icon: "ti-coffee",    items: ["Espresso","Ristretto","Espresso Lungo","Americano","Kaffee","Caffè Crema"] },
-  milch:     { icon: "ti-droplet",   items: ["Cappuccino","Flat White","Latte Macchiato","Caffè Latte","Café au Lait"] },
-  kalt:      { icon: "ti-snowflake", items: ["Eisgekühlter Kaffee","Iced Espresso","Iced Americano","Iced Caffè Crema","Iced Cappuccino","Iced Latte","Iced Café au Lait","Iced Caffè Latte"] },
-  weiteres:  { icon: "ti-dots", items: ["Coffee-to-go","Heißes Wasser","Milchschaum"] }
+// Standard-Getränkekarte. Wird vom Empfangssystem überschrieben, sobald dort die Karte geändert wird.
+const DEFAULT_MENU = {
+  updatedAt: 0,
+  categories: [
+    { name: "Klassiker",               icon: "ti-coffee",    items: ["Espresso","Ristretto","Espresso Lungo","Americano","Kaffee","Caffè Crema"] },
+    { name: "Milchspezialitäten",      icon: "ti-droplet",   items: ["Cappuccino","Flat White","Latte Macchiato","Caffè Latte","Café au Lait"] },
+    { name: "Eiskaffee & Cold Drinks", icon: "ti-snowflake", items: ["Eisgekühlter Kaffee","Iced Espresso","Iced Americano","Iced Caffè Crema","Iced Cappuccino","Iced Latte","Iced Café au Lait","Iced Caffè Latte"] },
+    { name: "Weiteres",                icon: "ti-dots",      items: ["Coffee-to-go","Heißes Wasser","Milchschaum"] }
+  ],
+  extras: ["Zucker", "Laktosefrei", "Extra Milch"]
 };
+const MENU_KEY = "kaffee-menu";
 
-// Extras die pro Getränk gewählt werden können
-const EXTRAS = ["Zucker", "Laktosefrei", "Extra Milch"];
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function validMenu(m) {
+  return m && Array.isArray(m.categories) && Array.isArray(m.extras) &&
+    m.categories.every(c => c && typeof c.name === "string" && Array.isArray(c.items));
+}
+function loadMenu() {
+  try {
+    const m = JSON.parse(localStorage.getItem(MENU_KEY));
+    if (validMenu(m)) return m;
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_MENU));
+}
+let menu = loadMenu();
 
-let channel; // wird unten nach Script-Laden gesetzt
+let channel;
 let selectedTable = null;
 let scanActive = false;
 let scanStream = null;
+let scanTimer = null;
+let facingMode = "environment";
+let lastErrorAt = 0;
 
 // ── QR-Scanner ────────────────────────────────────────────────────────────────
 async function startScanner() {
   if (scanActive) return;
-  const wrap = document.getElementById("scanner-wrap");
-  const hint = document.getElementById("scan-hint");
-  const cancel = document.getElementById("btn-cancel");
   const result = document.getElementById("scan-result");
-  const videoEl = document.getElementById("scanner-video");
-
-  wrap.classList.add("active");
-  hint.style.display = "block";
-  cancel.style.display = "inline-block";
   result.className = "scan-result";
   result.textContent = "";
-  scanActive = true;
 
-  // Kamerazugriff: Rückkamera bevorzugen
+  if (!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showScanError("Kamera nur über HTTPS (oder localhost) verfügbar. Alternativ Tischnummer unten eingeben.");
+    return;
+  }
+
+  const videoEl = document.getElementById("scanner-video");
+  scanActive = true;
+  document.getElementById("btn-start").style.display = "none";
+  document.getElementById("scanner-wrap").classList.add("active");
+  document.getElementById("scan-hint").style.display = "block";
+  document.getElementById("scan-actions").classList.add("active");
+
   try {
     scanStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 } }
+      video: { facingMode: { ideal: facingMode }, width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
     });
     videoEl.srcObject = scanStream;
     await videoEl.play();
-  } catch(e) {
-    showScanError("Kamerazugriff verweigert. Bitte in den Browser-Einstellungen erlauben.");
+  } catch (e) {
     stopScanner();
+    showScanError(e && e.name === "NotAllowedError"
+      ? "Kamerazugriff verweigert. Bitte in den Browser-Einstellungen erlauben."
+      : "Keine Kamera gefunden oder Kamera wird bereits verwendet.");
     return;
   }
 
-  // Native BarcodeDetector (Chrome/Android) oder ZXing Fallback
-  if (typeof BarcodeDetector !== "undefined") {
-    scanWithBarcodeDetector(videoEl);
-  } else {
-    scanWithZXing(videoEl);
-  }
-}
-
-// Variante 1: Native BarcodeDetector API
-function scanWithBarcodeDetector(videoEl) {
-  const detector = new BarcodeDetector({ formats: ["qr_code"] });
-  let rafId;
-  async function detect() {
-    if (!scanActive) return;
-    try {
-      const codes = await detector.detect(videoEl);
-      if (codes.length > 0) {
-        handleScanResult(codes[0].rawValue.trim());
-        return;
-      }
-    } catch(e) {}
-    rafId = requestAnimationFrame(detect);
-  }
-  detect();
-}
-
-// Variante 2: ZXing Library Fallback (v0.21 kompatibel – via Canvas-Polling)
-function scanWithZXing(videoEl) {
+  // "Kamera wechseln" nur anzeigen, wenn mehrere Kameras vorhanden sind
   try {
-    const hints = new Map();
-    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.QR_CODE]);
-    const reader = new ZXing.MultiFormatReader();
-    reader.setHints(hints);
-    window._zxingReader = reader;
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const cams = devices.filter(d => d.kind === "videoinput");
+    document.getElementById("btn-switch").style.display = cams.length > 1 ? "inline-flex" : "none";
+  } catch (e) {}
 
+  const detect = await createDetector();
+  if (!detect) {
+    stopScanner();
+    showScanError("QR-Scanner konnte nicht geladen werden. Bitte Tischnummer manuell eingeben.");
+    return;
+  }
+  runScanLoop(videoEl, detect);
+}
+
+// Liefert eine Funktion video -> Text|null. Bevorzugt native BarcodeDetector-API,
+// sonst jsQR (funktioniert auch auf iPhone/Safari, Firefox und Desktop-Chrome).
+async function createDetector() {
+  if ("BarcodeDetector" in window) {
+    try {
+      const formats = await BarcodeDetector.getSupportedFormats();
+      if (formats.includes("qr_code")) {
+        const detector = new BarcodeDetector({ formats: ["qr_code"] });
+        return async (video) => {
+          const codes = await detector.detect(video);
+          return codes.length ? codes[0].rawValue : null;
+        };
+      }
+    } catch (e) {}
+  }
+  if (typeof jsQR === "function") {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
-
-    function pollFrame() {
-      if (!scanActive) return;
-      if (!videoEl.videoWidth) { requestAnimationFrame(pollFrame); return; }
-      canvas.width  = videoEl.videoWidth;
-      canvas.height = videoEl.videoHeight;
-      ctx.drawImage(videoEl, 0, 0);
-      const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      try {
-        const lum    = new ZXing.RGBLuminanceSource(data, canvas.width, canvas.height);
-        const bitmap = new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(lum));
-        const result = reader.decode(bitmap);
-        if (scanActive) handleScanResult(result.getText().trim());
-      } catch(e) {
-        requestAnimationFrame(pollFrame);
-      }
-    }
-    requestAnimationFrame(pollFrame);
-  } catch(e) {
-    showScanError("QR-Scanner konnte nicht gestartet werden.");
-    stopScanner();
+    return async (video) => {
+      const vw = video.videoWidth, vh = video.videoHeight;
+      if (!vw || !vh) return null;
+      // Auf max. 720px verkleinern -> schneller, ohne Erkennungsverlust
+      const scale = Math.min(1, 720 / Math.max(vw, vh));
+      canvas.width = Math.round(vw * scale);
+      canvas.height = Math.round(vh * scale);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(img.data, img.width, img.height, { inversionAttempts: "attemptBoth" });
+      return code && code.data ? code.data : null;
+    };
   }
+  return null;
+}
+
+function runScanLoop(videoEl, detect) {
+  let busy = false;
+  clearInterval(scanTimer);
+  scanTimer = setInterval(async () => {
+    if (!scanActive || busy || videoEl.readyState < 2) return;
+    busy = true;
+    try {
+      const text = await detect(videoEl);
+      if (text && scanActive) handleScanResult(text.trim());
+    } catch (e) {}
+    busy = false;
+  }, 120);
+}
+
+async function switchCamera() {
+  facingMode = facingMode === "environment" ? "user" : "environment";
+  stopScanner();
+  await startScanner();
+}
+
+// Liest die Tischnummer aus dem QR-Inhalt.
+// Unterstützt: ".../bestellsystem.html?tisch=3", "Tisch 3", "3"
+function parseTable(text) {
+  try {
+    const u = new URL(text, location.href);
+    const t = u.searchParams.get("tisch") || u.searchParams.get("table");
+    if (t && /^\d+$/.test(t.trim())) return parseInt(t.trim(), 10);
+  } catch (e) {}
+  let m = text.match(/tisch\s*[:#=\-]?\s*(\d+)/i);
+  if (m) return parseInt(m[1], 10);
+  m = text.match(/^\s*(\d{1,3})\s*$/);
+  if (m) return parseInt(m[1], 10);
+  return null;
 }
 
 function handleScanResult(text) {
-  // Erwartet "Tisch 3" oder nur "3"
-  const match = text.match(/(\d+)/);
-  if (!match) {
-    showScanError(`Unbekannter QR-Code: "${text}"`);
+  const num = parseTable(text);
+  if (!num || num < 1) {
+    // Unbekannter Code: Hinweis zeigen, aber weiter scannen
+    if (Date.now() - lastErrorAt > 2000) {
+      lastErrorAt = Date.now();
+      showScanError(`Kein Tisch-QR-Code erkannt: "${text.length > 60 ? text.slice(0, 60) + "…" : text}"`);
+    }
     return;
   }
-  const num = parseInt(match[1], 10);
   stopScanner();
+  if (navigator.vibrate) navigator.vibrate(80);
   selectedTable = num;
   showScanSuccess(`Tisch ${num} erkannt`);
-  // Kurze Pause, dann Menü öffnen
-  setTimeout(() => openMenu(num), 800);
+  setTimeout(() => openMenu(num), 700);
+}
+
+function manualTable(e) {
+  e.preventDefault();
+  const v = document.getElementById("manual-num").value.trim();
+  if (!/^\d+$/.test(v) || parseInt(v, 10) < 1) { showScanError("Bitte eine gültige Tischnummer eingeben."); return; }
+  stopScanner();
+  selectedTable = parseInt(v, 10);
+  document.getElementById("manual-num").value = "";
+  openMenu(selectedTable);
 }
 
 function showScanSuccess(msg) {
   const el = document.getElementById("scan-result");
   el.className = "scan-result ok";
-  el.innerHTML = `<i class="ti ti-circle-check" aria-hidden="true"></i> ${msg}`;
+  el.innerHTML = `<i class="ti ti-circle-check" aria-hidden="true"></i> <span></span>`;
+  el.querySelector("span").textContent = msg;
 }
 function showScanError(msg) {
   const el = document.getElementById("scan-result");
   el.className = "scan-result err";
-  el.innerHTML = `<i class="ti ti-alert-circle" aria-hidden="true"></i> ${msg}`;
+  el.innerHTML = `<i class="ti ti-alert-circle" aria-hidden="true"></i> <span></span>`;
+  el.querySelector("span").textContent = msg;
 }
 
 function stopScanner() {
   scanActive = false;
-  if (window._zxingReader) { try { window._zxingReader.reset(); } catch(e) {} window._zxingReader = null; }
+  clearInterval(scanTimer); scanTimer = null;
   if (scanStream) { scanStream.getTracks().forEach(t => t.stop()); scanStream = null; }
   document.getElementById("scanner-video").srcObject = null;
   document.getElementById("scanner-wrap").classList.remove("active");
   document.getElementById("scan-hint").style.display = "none";
-  document.getElementById("btn-cancel").style.display = "none";
+  document.getElementById("scan-actions").classList.remove("active");
+  document.getElementById("btn-start").style.display = "inline-flex";
 }
 
 function openMenu(tableNum) {
   document.getElementById("scan-screen").style.display = "none";
+  document.getElementById("success-screen").style.display = "none";
   document.getElementById("menu-screen").style.display = "block";
   document.getElementById("table-badge-num").textContent = tableNum;
   document.getElementById("table-badge").classList.add("visible");
+}
+
+function showScanScreen() {
+  const r = document.getElementById("scan-result");
+  r.className = "scan-result"; r.textContent = "";
+  document.getElementById("menu-screen").style.display = "none";
+  document.getElementById("success-screen").style.display = "none";
+  document.getElementById("scan-screen").style.display = "block";
+  document.getElementById("table-badge").classList.remove("visible");
 }
 
 function goBackToScan() {
   clearCart();
   selectedTable = null;
   document.getElementById("note").value = "";
-  document.getElementById("scan-result").className = "scan-result";
-  document.getElementById("scan-result").textContent = "";
-  document.getElementById("menu-screen").style.display = "none";
-  document.getElementById("scan-screen").style.display = "block";
+  showScanScreen();
 }
 
 // ── Menü ─────────────────────────────────────────────────────────────────────
+const cart = {};          // name -> { qty, extras }
+const itemEls = new Map(); // name -> DOM-Element
+let _pendingItem = null;
+
 function buildGrids() {
-  Object.entries(catalog).forEach(([key, { icon, items }]) => {
-    const grid = document.getElementById("grid-" + key);
+  const wrap = document.getElementById("menu-grids");
+  wrap.innerHTML = "";
+  itemEls.clear();
+  menu.categories.forEach(cat => {
+    const items = cat.items.filter(n => n && !itemEls.has(n));
+    if (!items.length) return;
+    const icon = /^ti-[a-z0-9-]+$/.test(cat.icon || "") ? cat.icon : "ti-coffee";
+    const label = document.createElement("div");
+    label.className = "section-label";
+    label.innerHTML = `<i class="ti ${icon}" aria-hidden="true"></i> <span>${esc(cat.name)}</span>`;
+    const grid = document.createElement("div");
+    grid.className = "grid";
     items.forEach(name => {
       const d = document.createElement("div");
-      d.className = "item"; d.id = "item-" + name;
-      d.innerHTML = `<i class="ti ${icon} ico" aria-hidden="true"></i><span class="lbl">${name}</span><span class="qty"><span class="qty-btn" onclick="changeQty(event,'${name}',-1)">−</span><span class="qty-num" id="qty-${name}">1</span><span class="qty-btn" onclick="changeQty(event,'${name}',1)">+</span></span>`;
+      d.className = "item" + (cart[name] ? " active" : "");
+      d.innerHTML = `<i class="ti ${icon} ico" aria-hidden="true"></i><span class="lbl">${esc(name)}</span><span class="qty"><span class="qty-btn" data-d="-1">−</span><span class="qty-num">${cart[name] ? cart[name].qty : 1}</span><span class="qty-btn" data-d="1">+</span></span>`;
+      d.querySelectorAll(".qty-btn").forEach(b => b.addEventListener("click", e => changeQty(e, name, +b.dataset.d)));
       d.addEventListener("click", () => toggleItem(name));
+      itemEls.set(name, d);
       grid.appendChild(d);
     });
+    wrap.appendChild(label);
+    wrap.appendChild(grid);
   });
+  // Getränke, die es nicht mehr gibt, aus dem Warenkorb entfernen
+  Object.keys(cart).forEach(k => { if (!itemEls.has(k)) delete cart[k]; });
+  renderCart();
 }
 
-// cart: { name: { qty, extras: [] } }
-const cart = {};
-let _pendingItem = null; // item name waiting for extras confirmation
+function setActive(name, on) { const el = itemEls.get(name); if (el) el.classList.toggle("active", on); }
+function setQtyDisplay(name, q) { const el = itemEls.get(name); if (el) el.querySelector(".qty-num").textContent = q; }
+
+function applyMenu(m) {
+  if (!validMenu(m) || (m.updatedAt || 0) <= (menu.updatedAt || 0)) return;
+  menu = m;
+  try { localStorage.setItem(MENU_KEY, JSON.stringify(m)); } catch (e) {}
+  buildGrids();
+}
 
 function toggleItem(name) {
   if (cart[name]) {
     delete cart[name];
-    document.getElementById("item-"+name).classList.remove("active");
+    setActive(name, false);
     renderCart();
   } else {
     openExtrasModal(name);
@@ -403,16 +525,12 @@ function toggleItem(name) {
 }
 
 function openExtrasModal(name) {
+  if (!menu.extras.length) { _pendingItem = name; confirmExtras(); return; }
   _pendingItem = name;
   document.getElementById("extras-title").textContent = name + " – Extras";
-  const opts = document.getElementById("extras-options");
-  opts.innerHTML = EXTRAS.map(ex => `
-    <label style="display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--steam);border-radius:var(--radius-sm);padding:11px 14px;cursor:pointer;font-size:14px;color:var(--text);">
-      <input type="checkbox" value="${ex}" style="width:16px;height:16px;accent-color:var(--crema);cursor:pointer;">
-      ${ex}
-    </label>`).join("");
-  const overlay = document.getElementById("extras-overlay");
-  overlay.style.display = "flex";
+  document.getElementById("extras-options").innerHTML = menu.extras.map(ex => `
+    <label class="extra-opt"><input type="checkbox" value="${esc(ex)}"> ${esc(ex)}</label>`).join("");
+  document.getElementById("extras-overlay").style.display = "flex";
 }
 
 function dismissExtrasModal(e) {
@@ -424,8 +542,8 @@ function confirmExtras() {
   if (!_pendingItem) return;
   const checked = [...document.querySelectorAll("#extras-options input:checked")].map(i => i.value);
   cart[_pendingItem] = { qty: 1, extras: checked };
-  document.getElementById("item-"+_pendingItem).classList.add("active");
-  document.getElementById("qty-"+_pendingItem).textContent = "1";
+  setActive(_pendingItem, true);
+  setQtyDisplay(_pendingItem, 1);
   _pendingItem = null;
   renderCart();
 }
@@ -434,26 +552,27 @@ function changeQty(e, name, delta) {
   e.stopPropagation();
   if (!cart[name]) return;
   cart[name].qty = Math.max(1, cart[name].qty + delta);
-  document.getElementById("qty-"+name).textContent = cart[name].qty;
+  setQtyDisplay(name, cart[name].qty);
   renderCart();
 }
 
 function renderCart() {
   const keys = Object.keys(cart);
-  const total = keys.reduce((s,k) => s + cart[k].qty, 0);
+  const total = keys.reduce((s, k) => s + cart[k].qty, 0);
   const badge = document.getElementById("badge");
   badge.textContent = total; badge.style.display = keys.length ? "inline" : "none";
   document.getElementById("btn-order").disabled = !keys.length;
   const el = document.getElementById("cart-content");
   if (!keys.length) { el.innerHTML = '<p class="cart-empty">Noch nichts ausgewählt.</p>'; return; }
-  el.innerHTML = keys.map(k => {
-    const extrasStr = cart[k].extras.length ? `<span style="font-size:11px;color:var(--text2);margin-left:4px;">(${cart[k].extras.join(", ")})</span>` : "";
-    return `<div class="cart-row"><span class="cn">${k}${extrasStr}</span><span class="cq">${cart[k].qty}×</span><button class="cr" onclick="removeItem('${k}')"><i class="ti ti-x" aria-hidden="true"></i></button></div>`;
+  el.innerHTML = keys.map((k, i) => {
+    const extrasStr = cart[k].extras.length ? `<span class="cx">(${esc(cart[k].extras.join(", "))})</span>` : "";
+    return `<div class="cart-row"><span class="cn">${esc(k)}${extrasStr}</span><span class="cq">${cart[k].qty}×</span><button class="cr" data-i="${i}" aria-label="Entfernen"><i class="ti ti-x" aria-hidden="true"></i></button></div>`;
   }).join("");
+  el.querySelectorAll(".cr").forEach(b => b.addEventListener("click", () => removeItem(keys[+b.dataset.i])));
 }
 
-function removeItem(name) { delete cart[name]; document.getElementById("item-"+name).classList.remove("active"); renderCart(); }
-function clearCart() { Object.keys(cart).forEach(k => { document.getElementById("item-"+k).classList.remove("active"); delete cart[k]; }); renderCart(); }
+function removeItem(name) { delete cart[name]; setActive(name, false); renderCart(); }
+function clearCart() { Object.keys(cart).forEach(k => { setActive(k, false); delete cart[k]; }); renderCart(); }
 
 async function placeOrder() {
   const keys = Object.keys(cart);
@@ -461,19 +580,27 @@ async function placeOrder() {
   const note = document.getElementById("note").value.trim();
   const order = {
     id: Date.now(),
-    time: new Date().toLocaleTimeString("de-DE", {hour:"2-digit",minute:"2-digit"}),
+    time: new Date().toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }),
     items: keys.map(k => ({ name: k, qty: cart[k].qty, extras: cart[k].extras })),
     note,
     table: selectedTable || null,
     status: "new"
   };
-  await channel.publish("neue-bestellung", order);
+  const btn = document.getElementById("btn-order");
+  btn.disabled = true;
+  try {
+    await channel.publish("neue-bestellung", order);
+  } catch (e) {
+    btn.disabled = false;
+    alert("Bestellung konnte nicht gesendet werden. Bitte Verbindung prüfen.");
+    return;
+  }
   const list = keys.map(k => {
     const ex = cart[k].extras.length ? ` (${cart[k].extras.join(", ")})` : "";
-    return `${k}${ex}${cart[k].qty>1?" ×"+cart[k].qty:""}`;
+    return `${k}${ex}${cart[k].qty > 1 ? " ×" + cart[k].qty : ""}`;
   }).join(", ");
   const tableStr = selectedTable ? ` · Tisch ${selectedTable}` : "";
-  document.getElementById("success-text").textContent = `Bestellt: ${list}${note?". Anmerkung: "+note:""}${tableStr}`;
+  document.getElementById("success-text").textContent = `Bestellt: ${list}${note ? ". Anmerkung: " + note : ""}${tableStr}`;
   document.getElementById("menu-screen").style.display = "none";
   document.getElementById("success-screen").style.display = "block";
 }
@@ -482,35 +609,24 @@ function resetApp() {
   clearCart();
   selectedTable = null;
   document.getElementById("note").value = "";
-  document.getElementById("table-badge").classList.remove("visible");
-  document.getElementById("scan-result").className = "scan-result";
-  document.getElementById("scan-result").textContent = "";
-  document.getElementById("success-screen").style.display = "none";
-  document.getElementById("scan-screen").style.display = "block";
+  showScanScreen();
 }
 
 buildGrids();
 
-// ── Auto-Tisch aus URL-Parameter ────────────────────────────────────────────
+// ── Auto-Tisch aus URL-Parameter (Handy-Kamera scannt QR -> öffnet ?tisch=N) ──
 (function checkUrlParam() {
-  const params = new URLSearchParams(window.location.search);
-  const t = params.get("tisch");
-  if (t && /^\d+$/.test(t.trim())) {
-    const num = parseInt(t.trim(), 10);
-    selectedTable = num;
-    document.getElementById("scan-screen").style.display = "none";
-    document.getElementById("menu-screen").style.display = "block";
-    document.getElementById("table-badge-num").textContent = num;
-    document.getElementById("table-badge").classList.add("visible");
+  const t = new URLSearchParams(window.location.search).get("tisch");
+  if (t && /^\d+$/.test(t.trim()) && parseInt(t.trim(), 10) > 0) {
+    selectedTable = parseInt(t.trim(), 10);
+    openMenu(selectedTable);
   }
 })();
 </script>
 
-<!-- Scripts am Ende laden damit DOM bereit ist -->
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
 <script>
-// Ably initialisieren sobald Script geladen
 (function initAbly() {
   const ably = new Ably.Realtime({ key: ABLY_KEY });
   ably.connection.on('connected', () => {
@@ -526,6 +642,11 @@ buildGrids();
     document.getElementById('conn-label').textContent = 'Getrennt';
   });
   channel = ably.channels.get('kaffee-bestellungen');
+
+  // Getränkekarte live vom Empfangssystem übernehmen
+  const menuChannel = ably.channels.get('kaffee-karte', { params: { rewind: '1' } });
+  menuChannel.subscribe('menu-update', msg => applyMenu(msg.data));
+  menuChannel.attach().then(() => menuChannel.publish('menu-request', { at: Date.now() })).catch(() => {});
 })();
 </script>
 </body>
